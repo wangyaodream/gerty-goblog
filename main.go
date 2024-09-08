@@ -1,24 +1,59 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
 	"text/template"
+	"time"
 	"unicode/utf8"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 )
 
 // 包级别的变量不能使用:=表达式
 // router := mux.NewRouter()
 var router = mux.NewRouter()
+var db *sql.DB
 
 type ArticlesFormData struct {
 	Title, Body string
 	URL         *url.URL
 	Errors      map[string]string
+}
+
+func initDB() {
+	var err error
+	config := mysql.Config{
+		User:                 "root",
+		Passwd:               "Dream462213925",
+		Net:                  "tcp",
+		Addr:                 "127.0.0.1:3306",
+		DBName:               "goblog",
+		AllowNativePasswords: true,
+	}
+
+	// 准备数据库连接池
+	db, err = sql.Open("mysql", config.FormatDSN())
+	checkError(err)
+
+	// 配置连接属性
+	db.SetMaxOpenConns(25)                 // 最大连接数
+	db.SetMaxIdleConns(25)                 // 最大空闲数
+	db.SetConnMaxLifetime(5 * time.Minute) // 每个链接的过期时间
+
+	err = db.Ping()
+	checkError(err)
+}
+
+func checkError(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -146,6 +181,8 @@ func removeTrailingSlash(next http.Handler) http.Handler {
 }
 
 func main() {
+	// 初始化数据库
+	initDB()
 
 	// router := http.NewServeMux()
 

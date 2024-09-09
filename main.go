@@ -2,10 +2,12 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"text/template"
@@ -14,6 +16,7 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 // 包级别的变量不能使用:=表达式
@@ -29,26 +32,36 @@ type ArticlesFormData struct {
 
 func initDB() {
 	var err error
-	config := mysql.Config{
-		User:                 "root",
-		Passwd:               "Dream462213925",
-		Net:                  "tcp",
-		Addr:                 "127.0.0.1:3306",
-		DBName:               "goblog",
-		AllowNativePasswords: true,
+	err = godotenv.Load(".env")
+	if err != nil {
+		log.Fatal(err)
 	}
+	dbType := os.Getenv("DB_TYPE")
+	switch dbType {
+	case "mysql":
+		config := mysql.Config{
+			User:                 "root",
+			Passwd:               "Dream462213925",
+			Net:                  "tcp",
+			Addr:                 "127.0.0.1:3306",
+			DBName:               "goblog",
+			AllowNativePasswords: true,
+		}
 
-	// 准备数据库连接池
-	db, err = sql.Open("mysql", config.FormatDSN())
-	checkError(err)
+		// 准备数据库连接池
+		db, err = sql.Open("mysql", config.FormatDSN())
+		checkError(err)
 
-	// 配置连接属性
-	db.SetMaxOpenConns(25)                 // 最大连接数
-	db.SetMaxIdleConns(25)                 // 最大空闲数
-	db.SetConnMaxLifetime(5 * time.Minute) // 每个链接的过期时间
+		// 配置连接属性
+		db.SetMaxOpenConns(25)                 // 最大连接数
+		db.SetMaxIdleConns(25)                 // 最大空闲数
+		db.SetConnMaxLifetime(5 * time.Minute) // 每个链接的过期时间
 
-	err = db.Ping()
-	checkError(err)
+		err = db.Ping()
+		checkError(err)
+	case "postgresql":
+		log.Fatal(errors.New("PostgreSQL is not supported yet"))
+	}
 }
 
 func checkError(err error) {
@@ -58,14 +71,14 @@ func checkError(err error) {
 }
 
 func createTables() {
-    createArticlesSQL := `CREATE TABLE IF NOT EXISTS articles(
+	createArticlesSQL := `CREATE TABLE IF NOT EXISTS articles(
     id bigint(20) PRIMARY KEY AUTO_INCREMENT NOT NULL,
     title varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
     body longtext COLLATE utf8mb4_unicode_ci
 ); `
 
-    _, err := db.Exec(createArticlesSQL)
-    checkError(err)
+	_, err := db.Exec(createArticlesSQL)
+	checkError(err)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -123,14 +136,14 @@ func articlesStoreHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(errors) == 0 {
-        lastInsertID, err := saveArticleToDB(title, body)
-        if lastInsertID > 0 {
-            fmt.Fprint(w, "插入成功，ID为" + strconv.FormatInt(lastInsertID, 10))
-        } else {
-            checkError(err)
-            w.WriteHeader(http.StatusInternalServerError)
-            fmt.Fprint(w, "500 服务器内部错误")
-        }
+		lastInsertID, err := saveArticleToDB(title, body)
+		if lastInsertID > 0 {
+			fmt.Fprint(w, "插入成功，ID为"+strconv.FormatInt(lastInsertID, 10))
+		} else {
+			checkError(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "500 服务器内部错误")
+		}
 
 	} else {
 		storeURL, _ := router.Get("articles.store").URL()
@@ -159,34 +172,34 @@ func articlesStoreHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func saveArticleToDB(title string, body string) (int64, error) {
-    // 初始化变量
-    var (
-        id int64
-        err error
-        rs sql.Result
-        stmt *sql.Stmt
-    )
+	// 初始化变量
+	var (
+		id   int64
+		err  error
+		rs   sql.Result
+		stmt *sql.Stmt
+	)
 
-    // 获取一个prepare声明
-    stmt, err = db.Prepare("INSERT INTO articles (title, body) VALUES(?, ?)")
-    if err != nil {
-        return 0, err
-    }
+	// 获取一个prepare声明
+	stmt, err = db.Prepare("INSERT INTO articles (title, body) VALUES(?, ?)")
+	if err != nil {
+		return 0, err
+	}
 
-    // 在defer中声明关闭
-    defer stmt.Close()
+	// 在defer中声明关闭
+	defer stmt.Close()
 
-    // 执行请求
-    rs, err = stmt.Exec(title, body)
-    if err != nil {
-        return 0, err
-    }
+	// 执行请求
+	rs, err = stmt.Exec(title, body)
+	if err != nil {
+		return 0, err
+	}
 
-    if id, err = rs.LastInsertId(); id > 0 {
-        return id, nil
-    }
+	if id, err = rs.LastInsertId(); id > 0 {
+		return id, nil
+	}
 
-    return 0, err
+	return 0, err
 }
 
 // force HTML content type

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"text/template"
 	"time"
@@ -54,6 +55,17 @@ func checkError(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func createTables() {
+    createArticlesSQL := `CREATE TABLE IF NOT EXISTS articles(
+    id bigint(20) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    title varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+    body longtext COLLATE utf8mb4_unicode_ci
+); `
+
+    _, err := db.Exec(createArticlesSQL)
+    checkError(err)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -111,11 +123,15 @@ func articlesStoreHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(errors) == 0 {
-		fmt.Fprint(w, "验证通过！<br>")
-		fmt.Fprintf(w, "title: %s <br>", title)
-		fmt.Fprintf(w, "title length: %d <br>", len(title))
-		fmt.Fprintf(w, "body: %s <br>", body)
-		fmt.Fprintf(w, "body length: %d <br>", len(body))
+        lastInsertID, err := saveArticleToDB(title, body)
+        if lastInsertID > 0 {
+            fmt.Fprint(w, "插入成功，ID为" + strconv.FormatInt(lastInsertID, 10))
+        } else {
+            checkError(err)
+            w.WriteHeader(http.StatusInternalServerError)
+            fmt.Fprint(w, "500 服务器内部错误")
+        }
+
 	} else {
 		storeURL, _ := router.Get("articles.store").URL()
 
@@ -140,6 +156,37 @@ func articlesStoreHandler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Fprintf(w, "POST PostForm: %v <br>", r.PostForm)
 	// fmt.Fprintf(w, "POST Form: %v <br>", r.Form)
 	// fmt.Fprintf(w, "title : %v", title)
+}
+
+func saveArticleToDB(title string, body string) (int64, error) {
+    // 初始化变量
+    var (
+        id int64
+        err error
+        rs sql.Result
+        stmt *sql.Stmt
+    )
+
+    // 获取一个prepare声明
+    stmt, err = db.Prepare("INSERT INTO articles (title, body) VALUES(?, ?)")
+    if err != nil {
+        return 0, err
+    }
+
+    // 在defer中声明关闭
+    defer stmt.Close()
+
+    // 执行请求
+    rs, err = stmt.Exec(title, body)
+    if err != nil {
+        return 0, err
+    }
+
+    if id, err = rs.LastInsertId(); id > 0 {
+        return id, nil
+    }
+
+    return 0, err
 }
 
 // force HTML content type

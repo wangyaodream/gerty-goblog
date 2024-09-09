@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,9 +13,10 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql" // MySQL driver
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
 // 包级别的变量不能使用:=表达式
@@ -37,31 +37,42 @@ func initDB() {
 		log.Fatal(err)
 	}
 	dbType := os.Getenv("DB_TYPE")
+	mysqlConnStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/goblog",
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"))
+
+	// PostgreSQL连接字符串
+	postgresConnStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_NAME"),
+	)
+
 	switch dbType {
 	case "mysql":
-		config := mysql.Config{
-			User:                 "root",
-			Passwd:               "Dream462213925",
-			Net:                  "tcp",
-			Addr:                 "127.0.0.1:3306",
-			DBName:               "goblog",
-			AllowNativePasswords: true,
-		}
-
-		// 准备数据库连接池
-		db, err = sql.Open("mysql", config.FormatDSN())
+		db, err = connectDB("mysql", mysqlConnStr)
 		checkError(err)
 
 		// 配置连接属性
 		db.SetMaxOpenConns(25)                 // 最大连接数
 		db.SetMaxIdleConns(25)                 // 最大空闲数
 		db.SetConnMaxLifetime(5 * time.Minute) // 每个链接的过期时间
-
-		err = db.Ping()
-		checkError(err)
 	case "postgresql":
-		log.Fatal(errors.New("PostgreSQL is not supported yet"))
+		db, err = connectDB("postgres", postgresConnStr)
+		checkError(err)
 	}
+}
+
+func connectDB(dbType, connStr string) (*sql.DB, error) {
+	db, err := sql.Open(dbType, connStr)
+	if err != nil {
+		return nil, err
+	}
+	return db, db.Ping()
 }
 
 func checkError(err error) {

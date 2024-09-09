@@ -254,6 +254,8 @@ func removeTrailingSlash(next http.Handler) http.Handler {
 func main() {
 	// 初始化数据库
 	initDB()
+	createTables()
+	defer db.Close()
 
 	// router := http.NewServeMux()
 

@@ -30,6 +30,15 @@ type ArticlesFormData struct {
 	Errors      map[string]string
 }
 
+func (a Article) Link() string {
+    showURL, err := router.Get("articles.show").URL("id", strconv.FormatInt(a.ID, 10))
+    if err != nil {
+        checkError(err)
+        return ""
+    }
+    return showURL.String()
+}
+
 func initDB() {
 	var err error
 	err = godotenv.Load(".env")

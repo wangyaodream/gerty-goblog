@@ -8,7 +8,7 @@
     <h1>所有文章</h1>
     <ul>
         {{ range $key, $article := . }}
-            <li><a href=""><strong>{{ $article.ID }}</strong>: {{ $article.Title }}</a></li>
+        <li><a href="{{ $article.Link }}"><strong>{{ $article.ID }}</strong>: {{ $article.Title }}</a></li>
         {{ end }}
     </ul>
 </body>

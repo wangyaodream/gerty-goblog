@@ -106,12 +106,25 @@ func checkError(err error) {
 }
 
 func createTables() {
-	createArticlesSQL := `CREATE TABLE IF NOT EXISTS articles(
-    id bigint(20) PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    title varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-    body longtext COLLATE utf8mb4_unicode_ci
-); `
+    dbType := os.Getenv("DB_TYPE")
+    var createArticlesSQL string
+    switch dbType {
+    case "mysql":
+        createArticlesSQL = `CREATE TABLE IF NOT EXISTS articles(
+        id bigint(20) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+        title varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+        body longtext COLLATE utf8mb4_unicode_ci
+    ); `
+    case "postgres":
+        createArticlesSQL = `CREATE TABLE IF NOT EXISTS articles (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        body TEXT
+    );`
 
+    }
+
+    fmt.Println(createArticlesSQL)
 	_, err := db.Exec(createArticlesSQL)
 	checkError(err)
 }

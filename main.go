@@ -130,7 +130,31 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "The article list")
+    rows, err := db.Query("SELECT * from articles")
+    checkError(err)
+    defer rows.Close()
+
+    var articles []Article
+
+    for rows.Next() {
+        var article Article
+
+        err := rows.Scan(&article.ID, &article.Title, &article.Body)
+        checkError(err)
+
+        articles = append(articles, article)
+    }
+
+    err = rows.Err()
+    checkError(err)
+
+    // 加载模版
+    tmpl, err := template.ParseFiles("resources/views/articles/index.gohtml")
+    checkError(err)
+
+    // 渲染模版，将articles中的数据传入到模版中
+    err = tmpl.Execute(w, articles)
+    checkError(err)
 }
 
 func articlesStoreHandler(w http.ResponseWriter, r *http.Request) {

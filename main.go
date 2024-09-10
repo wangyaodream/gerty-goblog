@@ -109,12 +109,6 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<h1>请求页面未找到:(</h1>")
 }
 
-func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id := vars["id"]
-	fmt.Fprint(w, "article id: "+id)
-}
-
 func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "The article list")
 }
@@ -249,6 +243,42 @@ func removeTrailingSlash(next http.Handler) http.Handler {
 		// 将请求传递下去
 		next.ServeHTTP(w, r)
 	})
+}
+
+// 对应数据库中读取的数据
+type Article struct {
+	Title, Body string
+	ID          int64
+}
+
+func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
+	// 获取参数
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	// 读取文章数据
+	article := Article{}
+	query := "SELECT * FROM articles WHERE id = ?"
+	err := db.QueryRow(query, id).Scan(&article.ID, &article.Title, &article.Body)
+
+	// 错误处理
+	if err != nil {
+		if err == sql.ErrNoRows {
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprint(w, "404 文章未找到")
+		} else {
+			checkError(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "500 服务器内部错误")
+		}
+	} else {
+        // 读取成功，显示文章
+        tmpl, err := template.ParseFiles("resources/views/articles/show.gohtml")
+        checkError(err)
+
+        err = tmpl.Execute(w, article)
+        checkError(err)
+	}
 }
 
 func main() {

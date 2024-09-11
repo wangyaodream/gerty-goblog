@@ -23,6 +23,7 @@ import (
 // 包级别的变量不能使用:=表达式
 // router := mux.NewRouter()
 var db *sql.DB
+var router *mux.Router
 
 type ArticlesFormData struct {
 	Title, Body string
@@ -349,16 +350,6 @@ func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func RouteName2URL(routeName string, pairs ...string) string {
-	url, err := router.Get(routeName).URL(pairs...)
-	if err != nil {
-		checkError(err)
-		return ""
-	}
-
-	return url.String()
-}
-
 func Int64ToString(num int64) string {
 	return strconv.FormatInt(num, 10)
 }
@@ -509,7 +500,7 @@ func main() {
 	defer db.Close()
 
     route.Initialize()
-    router := route.Router
+    router = route.Router
 
 	// router := http.NewServeMux()
 

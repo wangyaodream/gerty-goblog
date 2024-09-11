@@ -21,8 +21,8 @@ func TestHomePage(t *testing.T) {
         {"GET", "/notfound", 404},
         {"GET", "/articles", 200},
         {"GET", "/articles/create", 200},
-        {"GET", "/articles/3/edit", 200},
-        {"POST", "/articles/3", 200},
+        {"GET", "/articles/2/edit", 200},
+        {"POST", "/articles/2", 200},
         {"POST", "/articles", 200},
         {"POST", "/articles/10/delete", 404},
     }

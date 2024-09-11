@@ -17,11 +17,11 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq" // PostgreSQL driver
+	"github.com/wangyaodream/gerty-goblog/pkg/route"
 )
 
 // 包级别的变量不能使用:=表达式
 // router := mux.NewRouter()
-var router = mux.NewRouter()
 var db *sql.DB
 
 type ArticlesFormData struct {
@@ -339,7 +339,7 @@ func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
 		// 增加删除按钮
 		tmpl, err := template.New("show.gohtml").
 			Funcs(template.FuncMap{
-				"RouteName2URL": RouteName2URL,
+				"RouteName2URL": route.Name2URL,
 				"Int64ToString": Int64ToString,
 			}).ParseFiles("resources/views/articles/show.gohtml")
 		checkError(err)
@@ -507,6 +507,9 @@ func main() {
 	initDB()
 	createTables()
 	defer db.Close()
+
+    route.Initialize()
+    router := route.Router
 
 	// router := http.NewServeMux()
 

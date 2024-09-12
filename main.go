@@ -226,7 +226,7 @@ type Article struct {
 
 func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
 	// 获取参数
-	id := route.GetRouteVariable("id", r)
+	id := getRouteVariable("id", r)
 
 	// 读取文章数据
 	article, err := getArticleByID(id)
@@ -266,7 +266,7 @@ func getArticleByID(id string) (Article, error) {
 
 func articlesEditHandler(w http.ResponseWriter, r *http.Request) {
 	// Get URLs param
-	id := route.GetRouteVariable("id", r)
+	id := getRouteVariable("id", r)
 
 	// read the data of post
 	article, err := getArticleByID(id)
@@ -300,7 +300,7 @@ func articlesEditHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func articlesUpdateHandler(w http.ResponseWriter, r *http.Request) {
-	id := route.GetRouteVariable("id", r)
+	id := getRouteVariable("id", r)
 	// 检查该文章
 	_, err := getArticleByID(id)
 
@@ -359,7 +359,7 @@ func articlesUpdateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func articlesDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	id := route.GetRouteVariable("id", r)
+	id := getRouteVariable("id", r)
 	article, err := getArticleByID(id)
 
 	if err != nil {

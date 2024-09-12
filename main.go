@@ -11,6 +11,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/gorilla/mux"
+	"github.com/wangyaodream/gerty-goblog/bootstrap"
 	"github.com/wangyaodream/gerty-goblog/pkg/database"
 	"github.com/wangyaodream/gerty-goblog/pkg/logger"
 	"github.com/wangyaodream/gerty-goblog/pkg/route"
@@ -390,14 +391,18 @@ func articlesDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func getRouteVariable(parameterName string, r *http.Request) string {
+	vars := mux.Vars(r)
+	return vars[parameterName]
+}
+
 func main() {
 	// 初始化数据库
 	database.Initialize()
 	DB = database.DB
 	defer DB.Close()
 
-	route.Initialize()
-	router = route.Router
+	router = bootstrap.SetupRoute()
 
 	// router := http.NewServeMux()
 

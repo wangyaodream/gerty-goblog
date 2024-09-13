@@ -14,8 +14,6 @@ import (
 	"github.com/wangyaodream/gerty-goblog/bootstrap"
 	"github.com/wangyaodream/gerty-goblog/pkg/database"
 	"github.com/wangyaodream/gerty-goblog/pkg/logger"
-	"github.com/wangyaodream/gerty-goblog/pkg/route"
-	"github.com/wangyaodream/gerty-goblog/pkg/types"
 )
 
 // 包级别的变量不能使用:=表达式
@@ -224,38 +222,38 @@ type Article struct {
 	ID          int64
 }
 
-func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
-	// 获取参数
-	id := getRouteVariable("id", r)
-
-	// 读取文章数据
-	article, err := getArticleByID(id)
-
-	// 错误处理
-	if err != nil {
-		if err == sql.ErrNoRows {
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprint(w, "404 文章未找到")
-		} else {
-			logger.LogError(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "500 服务器内部错误")
-		}
-	} else {
-		// 读取成功，显示文章
-		// tmpl, err := template.ParseFiles("resources/views/articles/show.gohtml")
-		// 增加删除按钮
-		tmpl, err := template.New("show.gohtml").
-			Funcs(template.FuncMap{
-				"RouteName2URL": route.Name2URL,
-				"Int64ToString": types.Int64ToString,
-			}).ParseFiles("resources/views/articles/show.gohtml")
-		logger.LogError(err)
-
-		err = tmpl.Execute(w, article)
-		logger.LogError(err)
-	}
-}
+// func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
+// 	// 获取参数
+// 	id := getRouteVariable("id", r)
+//
+// 	// 读取文章数据
+// 	article, err := getArticleByID(id)
+//
+// 	// 错误处理
+// 	if err != nil {
+// 		if err == sql.ErrNoRows {
+// 			w.WriteHeader(http.StatusNotFound)
+// 			fmt.Fprint(w, "404 文章未找到")
+// 		} else {
+// 			logger.LogError(err)
+// 			w.WriteHeader(http.StatusInternalServerError)
+// 			fmt.Fprint(w, "500 服务器内部错误")
+// 		}
+// 	} else {
+// 		// 读取成功，显示文章
+// 		// tmpl, err := template.ParseFiles("resources/views/articles/show.gohtml")
+// 		// 增加删除按钮
+// 		tmpl, err := template.New("show.gohtml").
+// 			Funcs(template.FuncMap{
+// 				"RouteName2URL": route.Name2URL,
+// 				"Int64ToString": types.Int64ToString,
+// 			}).ParseFiles("resources/views/articles/show.gohtml")
+// 		logger.LogError(err)
+//
+// 		err = tmpl.Execute(w, article)
+// 		logger.LogError(err)
+// 	}
+// }
 
 func getArticleByID(id string) (Article, error) {
 	article := Article{}
@@ -407,7 +405,7 @@ func main() {
 
 	// router := http.NewServeMux()
 
-	router.HandleFunc("/articles/{id:[0-9]+}", articlesShowHandler).Methods("GET").Name("articles.show")
+	// router.HandleFunc("/articles/{id:[0-9]+}", articlesShowHandler).Methods("GET").Name("articles.show")
 	router.HandleFunc("/articles", articlesIndexHandler).Methods("GET").Name("articles.index")
 	router.HandleFunc("/articles", articlesStoreHandler).Methods("POST").Name("articles.store")
 	router.HandleFunc("/articles/create", articlesCreateHandler).Methods("GET").Name("articles.create")

@@ -1,14 +1,15 @@
 package controllers
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 	"text/template"
 
+	"github.com/wangyaodream/gerty-goblog/app/models/article"
 	"github.com/wangyaodream/gerty-goblog/pkg/logger"
 	"github.com/wangyaodream/gerty-goblog/pkg/route"
 	"github.com/wangyaodream/gerty-goblog/pkg/types"
+	"gorm.io/gorm"
 )
 
 type ArticlesController struct {
@@ -19,11 +20,11 @@ func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 	id := route.GetRouteVariable("id", r)
 
 	// 读取文章数据
-	article, err := getArticleByID(id)
+	article, err := article.Get(id)
 
 	// 错误处理
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if err == gorm.ErrRecordNotFound {
 			w.WriteHeader(http.StatusNotFound)
 			fmt.Fprint(w, "404 文章未找到")
 		} else {
@@ -38,7 +39,7 @@ func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 		tmpl, err := template.New("show.gohtml").
 			Funcs(template.FuncMap{
 				"RouteName2URL": route.Name2URL,
-				"Int64ToString": types.Int64ToString,
+				"Uint64ToString": types.Uint64ToString,
 			}).ParseFiles("resources/views/articles/show.gohtml")
 		logger.LogError(err)
 

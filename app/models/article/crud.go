@@ -1,10 +1,10 @@
 package article
 
 import (
+	"github.com/wangyaodream/gerty-goblog/pkg/logger"
 	"github.com/wangyaodream/gerty-goblog/pkg/model"
 	"github.com/wangyaodream/gerty-goblog/pkg/types"
 )
-
 
 // Get post from id
 func Get(idstr string) (Article, error) {
@@ -24,4 +24,25 @@ func GetAll() ([]Article, error) {
         return articles, err
     }
     return articles, nil
+}
+
+// create post by aritcle.ID
+func (article *Article) Create() (err error) {
+    result := model.DB.Create(&article)
+    if err = result.Error; err != nil {
+        logger.LogError(err)
+        return err
+    }
+
+    return nil
+}
+
+func (article *Article) Update() (rowsAffected int64, err error) {
+    result := model.DB.Save(&article)
+    if err = result.Error; err != nil {
+        logger.LogError(err)
+        return 0, err
+    }
+
+    return result.RowsAffected, nil
 }

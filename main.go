@@ -400,8 +400,9 @@ func main() {
 	// 初始化数据库
 	database.Initialize()
 	DB = database.DB
-	defer DB.Close()
 
+
+    bootstrap.SetupDB()
 	router = bootstrap.SetupRoute()
 
 	// router := http.NewServeMux()

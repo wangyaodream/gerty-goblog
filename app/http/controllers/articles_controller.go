@@ -47,3 +47,24 @@ func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 		logger.LogError(err)
 	}
 }
+
+func (*ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
+    
+    // 交给app/models/article中的crud处理
+    articles, err := article.GetAll()
+
+    if err != nil {
+        // 这里错误是呈现在后台
+        logger.LogError(err)
+        w.WriteHeader(http.StatusInternalServerError)
+        // 这里的信息呈现在网页
+        fmt.Fprint(w, "500 服务器内部错误")
+    } else {
+        tmpl, err := template.ParseFiles("resources/views/articles/index.gohtml")
+        logger.LogError(err)
+
+        // render template
+        err = tmpl.Execute(w, articles)
+        logger.LogError(err)
+    }
+}

@@ -27,14 +27,6 @@ type ArticlesFormData struct {
 	Errors      map[string]string
 }
 
-func (a Article) Link() string {
-	showURL, err := router.Get("articles.show").URL("id", strconv.FormatInt(a.ID, 10))
-	if err != nil {
-		logger.LogError(err)
-		return ""
-	}
-	return showURL.String()
-}
 
 func (a Article) Delete() (rowsAffected int64, err error) {
 	res, err := DB.Exec("DELETE FROM articles WHERE id = ?", strconv.FormatInt(a.ID, 10))
@@ -68,34 +60,6 @@ func validateArticleFormData(title string, body string) map[string]string {
 		errors["body"] = "内容长度需要大于等于10"
 	}
 	return errors
-}
-
-func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
-	rows, err := DB.Query("SELECT * from articles")
-	logger.LogError(err)
-	defer rows.Close()
-
-	var articles []Article
-
-	for rows.Next() {
-		var article Article
-
-		err := rows.Scan(&article.ID, &article.Title, &article.Body)
-		logger.LogError(err)
-
-		articles = append(articles, article)
-	}
-
-	err = rows.Err()
-	logger.LogError(err)
-
-	// 加载模版
-	tmpl, err := template.ParseFiles("resources/views/articles/index.gohtml")
-	logger.LogError(err)
-
-	// 渲染模版，将articles中的数据传入到模版中
-	err = tmpl.Execute(w, articles)
-	logger.LogError(err)
 }
 
 func articlesStoreHandler(w http.ResponseWriter, r *http.Request) {
@@ -405,8 +369,6 @@ func main() {
 
 	// router := http.NewServeMux()
 
-	// router.HandleFunc("/articles/{id:[0-9]+}", articlesShowHandler).Methods("GET").Name("articles.show")
-	router.HandleFunc("/articles", articlesIndexHandler).Methods("GET").Name("articles.index")
 	router.HandleFunc("/articles", articlesStoreHandler).Methods("POST").Name("articles.store")
 	router.HandleFunc("/articles/create", articlesCreateHandler).Methods("GET").Name("articles.create")
 	router.HandleFunc("/articles/{id:[0-9]+}/edit", articlesEditHandler).Methods("GET").Name("articles.edit")

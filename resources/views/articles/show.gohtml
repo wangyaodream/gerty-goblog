@@ -6,13 +6,13 @@
 <div class="col-md-9 blog-main">
   <div class="blog-post bg-white p-5 rounded shadow mb-4">
     <h3 class="blog-post-title">{{ .Title }}</h3>
-    <p class="blog-post-meta text-secondary">发布于 <a href="" class="font-weight-bold">2024-09-14</a><a href="#" class="font-weight-bold">Wangyao</a></p>
+    <p class="blog-post-meta text-secondary">发布于 <a href="" class="font-weight-bold">2024-09-14</a>by <a href="#" class="font-weight-bold">Wangyao</a></p>
 
     <hr>
     {{ .Body }}
 
     {{/* delete button */}}
-    <form action="{{ RouteName2URL "articles.delete" "id" .GetStringID }}" class="mt-4">
+    <form action="{{ RouteName2URL "articles.delete" "id" .GetStringID }}" class="mt-4" method="POST">
       <button type="submit" onclick="return confirm('are you sure?')">Delete</button>
     </form>
   </div>

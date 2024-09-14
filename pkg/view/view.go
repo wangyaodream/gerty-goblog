@@ -10,22 +10,26 @@ import (
 	"github.com/wangyaodream/gerty-goblog/pkg/route"
 )
 
-func Render(w io.Writer, name string, data interface{}) {
+func Render(w io.Writer, data interface{}, tplFiles ...string) {
 	// 设置模板相对路径
 	viewDir := "resources/views/"
 
-	// example.foo => example/foo
-	name = strings.Replace(name, ".", "/", -1)
+	// 支持多模版
+	for i, f := range tplFiles {
+		tplFiles[i] = viewDir + strings.Replace(f, ".", "/", -1) + ".gohtml"
+	}
 
-	files, err := filepath.Glob(viewDir + "layouts/*.gohtml")
+	layoutFiles, err := filepath.Glob(viewDir + "layouts/*.gohtml")
 	logger.LogError(err)
 
-	newFiles := append(files, viewDir+name+".gohtml")
+	// 合并所有模版文件
+	allFiles := append(layoutFiles, tplFiles...)
 
-	tmpl, err := template.New(name + ".gohtml").
+	// 解析所有模版文件
+	tmpl, err := template.New("").
 		Funcs(template.FuncMap{
 			"RouteName2URL": route.Name2URL,
-		}).ParseFiles(newFiles...)
+		}).ParseFiles(allFiles...)
 	logger.LogError(err)
 
 	err = tmpl.ExecuteTemplate(w, "app", data)

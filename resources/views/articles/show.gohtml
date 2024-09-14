@@ -13,7 +13,8 @@
 
     {{/* delete button */}}
     <form action="{{ RouteName2URL "articles.delete" "id" .GetStringID }}" class="mt-4" method="POST">
-      <button type="submit" onclick="return confirm('are you sure?')">Delete</button>
+      <button class="btn btn-outline-danger btn-sm" type="submit" onclick="return confirm('are you sure?')">Delete</button>
+      <a href="{{ RouteName2URL "articles.edit" "id" .GetStringID}}" class="btn btn-outline-secondary btn-sm">编辑</a>
     </form>
   </div>
 </div>

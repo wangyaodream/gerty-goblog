@@ -3,7 +3,6 @@ package controllers
 import (
 	"fmt"
 	"net/http"
-	"path/filepath"
 	"strconv"
 	"text/template"
 	"unicode/utf8"
@@ -11,7 +10,7 @@ import (
 	"github.com/wangyaodream/gerty-goblog/app/models/article"
 	"github.com/wangyaodream/gerty-goblog/pkg/logger"
 	"github.com/wangyaodream/gerty-goblog/pkg/route"
-	"github.com/wangyaodream/gerty-goblog/pkg/types"
+	"github.com/wangyaodream/gerty-goblog/pkg/view"
 	"gorm.io/gorm"
 )
 
@@ -43,23 +42,7 @@ func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		// 读取成功，显示文章
-		viewDir := "resources/views"
-
-		files, err := filepath.Glob(viewDir + "/layouts/*.gohtml")
-		logger.LogError(err)
-
-		newFiles := append(files, viewDir+"/articles/show.gohtml")
-
-		// 解析模板并且为删除按钮提供对应的函数
-		tmpl, err := template.New("show.gohtml").
-			Funcs(template.FuncMap{
-				"RouteName2URL":  route.Name2URL,
-				"Uint64ToString": types.Uint64ToString,
-			}).ParseFiles(newFiles...)
-		logger.LogError(err)
-
-		err = tmpl.ExecuteTemplate(w, "app", article)
-		logger.LogError(err)
+		view.Render(w, "articles.show", article)
 	}
 }
 
@@ -75,19 +58,7 @@ func (*ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 		// 这里的信息呈现在网页
 		fmt.Fprint(w, "500 服务器内部错误")
 	} else {
-		viewDir := "resources/views"
-
-		files, err := filepath.Glob(viewDir + "/layouts/*.gohtml")
-		logger.LogError(err)
-
-		newFiles := append(files, viewDir+"/articles/index.gohtml")
-
-		// analyze template
-		tmpl, err := template.ParseFiles(newFiles...)
-		logger.LogError(err)
-
-		err = tmpl.ExecuteTemplate(w, "app", articles)
-		logger.LogError(err)
+		view.Render(w, "articles.index", articles)
 	}
 }
 

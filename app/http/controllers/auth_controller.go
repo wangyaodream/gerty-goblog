@@ -5,10 +5,18 @@ import (
 	"net/http"
 
 	"github.com/wangyaodream/gerty-goblog/app/models/user"
+	"github.com/wangyaodream/gerty-goblog/app/requests"
 	"github.com/wangyaodream/gerty-goblog/pkg/view"
 )
 
 type AuthController struct {
+}
+
+type userForm struct {
+	Name            string `valid:"name"`
+	Email           string `valid:"email"`
+	Password        string `valid:"password"`
+	PasswordConfirm string `valid:"password_confirm"`
 }
 
 func (*AuthController) Register(w http.ResponseWriter, r *http.Request) {
@@ -17,22 +25,32 @@ func (*AuthController) Register(w http.ResponseWriter, r *http.Request) {
 
 func (*AuthController) DoRegister(w http.ResponseWriter, r *http.Request) {
 
-	name := r.PostFormValue("name")
-	email := r.PostFormValue("email")
-	password := r.PostFormValue("password")
-
+	// 获取表单数据
 	_user := user.User{
-		Name:     name,
-		Email:    email,
-		Password: password,
+		Name:            r.PostFormValue("name"),
+		Email:           r.PostFormValue("email"),
+		Password:        r.PostFormValue("password"),
+		PasswordConfirm: r.PostFormValue("password_confirm"),
 	}
-	_user.Create()
 
-	if _user.ID > 0 {
-		fmt.Fprint(w, "insert successful ID: "+_user.GetStringID())
+	// 获取表单规则
+	errs := requests.ValidateRegistrationForm(_user)
+
+	if len(errs) > 0 {
+		// 发生错误输出错误信息
+		view.RenderSimple(w, view.D{
+			"Errors": errs,
+			"User":   _user,
+		}, "auth.register")
 	} else {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, "User creation failed!")
+		_user.Create()
+
+		if _user.ID > 0 {
+			http.Redirect(w, r, "/", http.StatusFound)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "注册失败!")
+		}
 	}
 
 }

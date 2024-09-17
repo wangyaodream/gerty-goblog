@@ -132,7 +132,7 @@ func (*ArticlesController) Edit(w http.ResponseWriter, r *http.Request) {
 			"Title":   article.Title,
 			"Body":    article.Body,
 			"Article": article,
-			"Errors":  nil,
+			"Errors":  view.D{},
 		}, "articles.edit", "articles._form_field")
 	}
 }

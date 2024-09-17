@@ -12,13 +12,6 @@ import (
 type AuthController struct {
 }
 
-type userForm struct {
-	Name            string `valid:"name"`
-	Email           string `valid:"email"`
-	Password        string `valid:"password"`
-	PasswordConfirm string `valid:"password_confirm"`
-}
-
 func (*AuthController) Register(w http.ResponseWriter, r *http.Request) {
 	view.RenderSimple(w, view.D{}, "auth.register")
 }

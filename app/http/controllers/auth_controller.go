@@ -47,3 +47,12 @@ func (*AuthController) DoRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+// Login
+func (*AuthController) Login(w http.ResponseWriter, r *http.Request) {
+	view.RenderSimple(w, view.D{}, "auth.login")
+}
+
+func (*AuthController) DoLogin(w http.ResponseWriter, r *http.Request) {
+	// TODO 登录验证
+}

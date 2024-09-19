@@ -3,6 +3,7 @@ package user
 import (
 	"github.com/wangyaodream/gerty-goblog/pkg/logger"
 	"github.com/wangyaodream/gerty-goblog/pkg/model"
+	"github.com/wangyaodream/gerty-goblog/pkg/password"
 	"github.com/wangyaodream/gerty-goblog/pkg/types"
 )
 
@@ -15,8 +16,8 @@ func (user *User) Create() (err error) {
 	return nil
 }
 
-func (user *User) ComparePassword(password string) bool {
-	return user.Password == password
+func (user *User) ComparePassword(_password string) bool {
+	return password.CheckHash(_password, user.Password)
 }
 
 func Get(idstr string) (User, error) {

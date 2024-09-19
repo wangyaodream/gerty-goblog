@@ -10,8 +10,8 @@ import (
 type Article struct {
 	// ID    uint64
 	models.BaseModel
-	Title string
-	Body  string
+	Title string `gorm:"type:varchar(255);not null;" valid:"title"`
+	Body  string `gorm:"type:longtext;not null;" valid:"body"`
 }
 
 func (a Article) Link() string {

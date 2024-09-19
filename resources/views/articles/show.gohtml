@@ -1,20 +1,20 @@
 {{define "title"}}
-{{ .Title }}
+{{ .Article.Title }}
 {{end}}
 
 {{define "main"}}
 <div class="col-md-9 blog-main">
   <div class="blog-post bg-white p-5 rounded shadow mb-4">
-    <h3 class="blog-post-title">{{ .Title }}</h3>
+    <h3 class="blog-post-title">{{ .Article.Title }}</h3>
     <p class="blog-post-meta text-secondary">发布于 <a href="" class="font-weight-bold">2024-09-14</a>by <a href="#" class="font-weight-bold">Wangyao</a></p>
 
     <hr>
-    {{ .Body }}
+    {{ .Article.Body }}
 
     {{/* delete button */}}
-    <form action="{{ RouteName2URL "articles.delete" "id" .GetStringID }}" class="mt-4" method="POST">
+    <form action="{{ RouteName2URL "articles.delete" "id" .Article.GetStringID }}" class="mt-4" method="POST">
       <button class="btn btn-outline-danger btn-sm" type="submit" onclick="return confirm('are you sure?')">Delete</button>
-      <a href="{{ RouteName2URL "articles.edit" "id" .GetStringID}}" class="btn btn-outline-secondary btn-sm">编辑</a>
+      <a href="{{ RouteName2URL "articles.edit" "id" .Article.GetStringID }}" class="btn btn-outline-secondary btn-sm">Edit</a>
     </form>
   </div>
 </div>

@@ -6,26 +6,20 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/wangyaodream/gerty-goblog/pkg/auth"
 	"github.com/wangyaodream/gerty-goblog/pkg/logger"
 	"github.com/wangyaodream/gerty-goblog/pkg/route"
 )
 
 type D map[string]interface{}
 
-func RenderTemplate(w io.Writer, name string, data interface{}, tplFiles ...string) {
-	// 设置模板相对路径
-	viewDir := "resources/views/"
+func RenderTemplate(w io.Writer, name string, data D, tplFiles ...string) {
 
-	// 支持多模版
-	for i, f := range tplFiles {
-		tplFiles[i] = viewDir + strings.Replace(f, ".", "/", -1) + ".gohtml"
-	}
-
-	layoutFiles, err := filepath.Glob(viewDir + "layouts/*.gohtml")
-	logger.LogError(err)
+	// 判断登录,直接查看session中的uid值是否存在
+	data["isLogined"] = auth.Check()
 
 	// 合并所有模版文件
-	allFiles := append(layoutFiles, tplFiles...)
+	allFiles := getTemplateFiles(tplFiles...)
 
 	// 解析所有模版文件
 	tmpl, err := template.New("").
@@ -38,10 +32,23 @@ func RenderTemplate(w io.Writer, name string, data interface{}, tplFiles ...stri
 	logger.LogError(err)
 }
 
-func RenderSimple(w io.Writer, data interface{}, tplFiles ...string) {
+func RenderSimple(w io.Writer, data D, tplFiles ...string) {
 	RenderTemplate(w, "simple", data, tplFiles...)
 }
 
-func Render(w io.Writer, data interface{}, tplFiles ...string) {
+func Render(w io.Writer, data D, tplFiles ...string) {
 	RenderTemplate(w, "app", data, tplFiles...)
+}
+
+func getTemplateFiles(tplFiles ...string) []string {
+	viewDir := "resources/views/"
+
+	for i, f := range tplFiles {
+		tplFiles[i] = viewDir + strings.Replace(f, ".", "/", -1) + ".gohtml"
+	}
+
+	layoutFiles, err := filepath.Glob(viewDir + "layouts/*.gohtml")
+	logger.LogError(err)
+
+	return append(layoutFiles, tplFiles...)
 }

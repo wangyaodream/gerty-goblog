@@ -5,6 +5,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/wangyaodream/gerty-goblog/app/http/controllers"
+	"github.com/wangyaodream/gerty-goblog/app/http/middlewares"
 )
 
 func RegisterWebRoutes(r *mux.Router) {
@@ -40,6 +41,8 @@ func RegisterWebRoutes(r *mux.Router) {
 	r.HandleFunc("/auth/login", auc.Login).Methods("GET").Name("auth.login")
 	r.HandleFunc("/auth/dologin", auc.DoLogin).Methods("POST").Name("auth.dologin")
 
+	// 注册中间件
+	r.Use(middlewares.StartSession)
 	// use middleware
 	// r.Use(middlewares.ForceHTML)
 

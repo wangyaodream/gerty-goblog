@@ -7,6 +7,7 @@ import (
 	"github.com/wangyaodream/gerty-goblog/app/models/user"
 	"github.com/wangyaodream/gerty-goblog/app/requests"
 	"github.com/wangyaodream/gerty-goblog/pkg/auth"
+	"github.com/wangyaodream/gerty-goblog/pkg/flash"
 	"github.com/wangyaodream/gerty-goblog/pkg/view"
 )
 
@@ -41,6 +42,7 @@ func (*AuthController) DoRegister(w http.ResponseWriter, r *http.Request) {
 
 		if _user.ID > 0 {
 			// 注册成功之后直接处于登录状态
+			flash.Success("恭喜您注册成功!")
 			auth.Login(_user)
 			http.Redirect(w, r, "/", http.StatusFound)
 		} else {
@@ -63,6 +65,7 @@ func (*AuthController) DoLogin(w http.ResponseWriter, r *http.Request) {
 	password := r.PostFormValue("password")
 
 	if err := auth.Attempt(email, password); err == nil {
+		flash.Success("欢迎回来!")
 		http.Redirect(w, r, "/", http.StatusFound)
 	} else {
 		view.RenderSimple(w, view.D{
@@ -75,5 +78,6 @@ func (*AuthController) DoLogin(w http.ResponseWriter, r *http.Request) {
 
 func (*AuthController) Logout(w http.ResponseWriter, r *http.Request) {
 	auth.Logout()
+	flash.Success("已退出!")
 	http.Redirect(w, r, "/", http.StatusFound)
 }

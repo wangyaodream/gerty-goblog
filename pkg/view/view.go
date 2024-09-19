@@ -7,6 +7,7 @@ import (
 	"text/template"
 
 	"github.com/wangyaodream/gerty-goblog/pkg/auth"
+	"github.com/wangyaodream/gerty-goblog/pkg/flash"
 	"github.com/wangyaodream/gerty-goblog/pkg/logger"
 	"github.com/wangyaodream/gerty-goblog/pkg/route"
 )
@@ -15,8 +16,10 @@ type D map[string]interface{}
 
 func RenderTemplate(w io.Writer, name string, data D, tplFiles ...string) {
 
-	// 判断登录,直接查看session中的uid值是否存在
+	// 通用模板数据
 	data["isLogined"] = auth.Check()
+	data["loginUser"] = auth.User
+	data["flash"] = flash.All()
 
 	// 合并所有模版文件
 	allFiles := getTemplateFiles(tplFiles...)

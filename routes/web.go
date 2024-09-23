@@ -39,7 +39,7 @@ func RegisterWebRoutes(r *mux.Router) {
 
 	// login
 	r.HandleFunc("/auth/login", middlewares.Guest(auc.Login)).Methods("GET").Name("auth.login")
-	r.HandleFunc("/auth/dologin", middlewares.Auth(auc.DoLogin)).Methods("POST").Name("auth.dologin")
+	r.HandleFunc("/auth/dologin", middlewares.Guest(auc.DoLogin)).Methods("POST").Name("auth.dologin")
 
 	// logout
 	r.HandleFunc("/auth/logout", middlewares.Auth(auc.Logout)).Methods("POST").Name("auth.logout")

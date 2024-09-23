@@ -1,9 +1,8 @@
 package user
 
 import (
-	"fmt"
-
 	"github.com/wangyaodream/gerty-goblog/app/models"
+	"github.com/wangyaodream/gerty-goblog/pkg/route"
 )
 
 type User struct {
@@ -17,7 +16,5 @@ type User struct {
 }
 
 func (u User) Link() string {
-	res := fmt.Sprintf("%s-%s-%s", u.ID, u.Name, u.Email)
-	res = ""
-	return res
+	return route.Name2URL("users.show", "id", u.GetStringID())
 }

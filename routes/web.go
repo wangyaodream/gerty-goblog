@@ -44,6 +44,10 @@ func RegisterWebRoutes(r *mux.Router) {
 	// logout
 	r.HandleFunc("/auth/logout", auc.Logout).Methods("POST").Name("auth.logout")
 
+	// about user
+	uc := new(controllers.UserController)
+	r.HandleFunc("/users/{id:[0-9]+}", uc.Show).Methods("GET").Name("users.show")
+
 	// 注册中间件
 	r.Use(middlewares.StartSession)
 	// use middleware

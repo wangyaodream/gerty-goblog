@@ -6,6 +6,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/wangyaodream/gerty-goblog/app/models/user"
 	"github.com/wangyaodream/gerty-goblog/pkg/auth"
 	"github.com/wangyaodream/gerty-goblog/pkg/flash"
 	"github.com/wangyaodream/gerty-goblog/pkg/logger"
@@ -20,6 +21,7 @@ func RenderTemplate(w io.Writer, name string, data D, tplFiles ...string) {
 	data["isLogined"] = auth.Check()
 	data["loginUser"] = auth.User
 	data["flash"] = flash.All()
+	data["Users"], _ = user.All()
 
 	// 合并所有模版文件
 	allFiles := getTemplateFiles(tplFiles...)

@@ -17,9 +17,9 @@
   <div class="p-4 bg-white rounded shadow-sm mb-3">
     <h5>Authors</h5>
     <ol class="list-unstyled mb-0">
-      <li><a href="#">Gray</a></li>
-      <li><a href="#">Auto</a></li>
-      <li><a href="#">Gerty</a></li>
+      {{ range $key, $user := .Users }}
+        <li><a href="{{ $user.Link }}">{{ $user.Name }}</a></li>
+      {{ end }}
     </ol>
   </div>
 

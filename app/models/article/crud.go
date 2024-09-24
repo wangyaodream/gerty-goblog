@@ -24,7 +24,7 @@ func Get(idstr string) (Article, error) {
 // get all post
 func GetAll(r *http.Request, perPage int) ([]Article, pagination.ViewData, error) {
 	db := model.DB.Model(Article{}).Order("created_at desc")
-	_pager := pagination.New(r, db, route.Name2URL("home", perPage), PerPage int)
+	_pager := pagination.New(r, db, route.Name2URL("home"), perPage)
 
 	viewData := _pager.Paging()
 

@@ -4,13 +4,14 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/wangyaodream/gerty-goblog/pkg/config"
 	"github.com/wangyaodream/gerty-goblog/pkg/logger"
 )
 
 var route *mux.Router
 
 func SetRoute(r *mux.Router) {
-    route = r
+	route = r
 }
 
 func Name2URL(routeName string, pairs ...string) string {
@@ -20,7 +21,7 @@ func Name2URL(routeName string, pairs ...string) string {
 		return ""
 	}
 
-	return url.String()
+	return config.GetString("app.url") + url.String()
 }
 
 func GetRouteVariable(parameterName string, r *http.Request) string {

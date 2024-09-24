@@ -53,7 +53,7 @@ func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 func (*ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 
 	// 交给app/models/article中的crud处理
-	articles, err := article.GetAll()
+	articles, pagerData, err := article.GetAll(r, 2)
 
 	if err != nil {
 		// 这里错误是呈现在后台
@@ -63,7 +63,8 @@ func (*ArticlesController) Index(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "500 服务器内部错误")
 	} else {
 		view.Render(w, view.D{
-			"Articles": articles,
+			"Articles":  articles,
+			"PagerData": pagerData,
 		}, "articles.index", "articles._article_meta")
 	}
 }

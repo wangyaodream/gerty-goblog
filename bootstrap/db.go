@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/wangyaodream/gerty-goblog/app/models/article"
+	"github.com/wangyaodream/gerty-goblog/app/models/category"
 	"github.com/wangyaodream/gerty-goblog/app/models/user"
 	"github.com/wangyaodream/gerty-goblog/pkg/model"
 	"gorm.io/gorm"
@@ -25,9 +26,10 @@ func SetupDB() {
 }
 
 func migration(db *gorm.DB) {
-	// auto migrate
+	// 注册自动迁移
 	db.AutoMigrate(
 		&user.User{},
 		&article.Article{},
+		&category.Category{},
 	)
 }

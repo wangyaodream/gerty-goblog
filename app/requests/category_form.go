@@ -7,7 +7,7 @@ import (
 
 func ValidateCategoryForm(data category.Category) map[string][]string {
 	rules := govalidator.MapData{
-		"name": []string{"required", "min:2", "max:8", "not_exists:categories,name"},
+		"name": []string{"required", "min_cn:2", "max_cn:8", "not_exists:categories,name"},
 	}
 
 	messages := govalidator.MapData{

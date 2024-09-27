@@ -3,7 +3,9 @@ package requests
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/thedevsaddam/govalidator"
 	"github.com/wangyaodream/gerty-goblog/pkg/model"
@@ -29,5 +31,34 @@ func init() {
 		}
 
 		return nil
+	})
+
+	// max_cn:8
+	govalidator.AddCustomRule("max_cn", func(field string, rule string, message string, value interface{}) error {
+		valLength := utf8.RuneCountInString(value.(string))
+		l, _ := strconv.Atoi(strings.TrimPrefix(rule, "max_cn:"))
+
+		if valLength > l {
+			if message != "" {
+				return errors.New(message)
+			}
+			return fmt.Errorf("长度不能超过 %d", l)
+		}
+		return nil
+	})
+
+	// min_cn:2
+	govalidator.AddCustomRule("min_cn", func(field string, rule string, message string, value interface{}) error {
+		valLength := utf8.RuneCountInString(value.(string))
+		l, _ := strconv.Atoi(strings.TrimPrefix(rule, "min_cn:"))
+
+		if valLength < l {
+			if message != "" {
+				return errors.New(message)
+			}
+			return fmt.Errorf("长度需大于 %d 个字", l)
+		}
+		return nil
+
 	})
 }

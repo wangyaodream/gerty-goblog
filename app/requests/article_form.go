@@ -7,8 +7,8 @@ import (
 
 func ValidateArticleForm(data article.Article) map[string][]string {
 	rules := govalidator.MapData{
-		"title": []string{"required", "min:3", "max:40"},
-		"body":  []string{"required", "min:10"},
+		"title": []string{"required", "min_cn:3", "max_cn:40"},
+		"body":  []string{"required", "min_cn:10"},
 	}
 
 	// 定制错误消息

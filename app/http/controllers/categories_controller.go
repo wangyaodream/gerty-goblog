@@ -6,6 +6,8 @@ import (
 
 	"github.com/wangyaodream/gerty-goblog/app/models/category"
 	"github.com/wangyaodream/gerty-goblog/app/requests"
+	"github.com/wangyaodream/gerty-goblog/pkg/flash"
+	"github.com/wangyaodream/gerty-goblog/pkg/route"
 	"github.com/wangyaodream/gerty-goblog/pkg/view"
 )
 
@@ -27,7 +29,9 @@ func (*CategoriesController) Store(w http.ResponseWriter, r *http.Request) {
 	if len(errors) == 0 {
 		_category.Create()
 		if _category.ID > 0 {
-			fmt.Fprint(w, "创建成功！")
+			flash.Success("分类创建成功")
+			indexURL := route.Name2URL("home")
+			http.Redirect(w, r, indexURL, http.StatusFound)
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "创建文章分类失败")

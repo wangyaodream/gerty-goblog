@@ -3,6 +3,7 @@ package category
 import (
 	"github.com/wangyaodream/gerty-goblog/pkg/logger"
 	"github.com/wangyaodream/gerty-goblog/pkg/model"
+	"github.com/wangyaodream/gerty-goblog/pkg/types"
 )
 
 func (category *Category) Create() (err error) {
@@ -20,4 +21,13 @@ func All() ([]Category, error) {
 		return categories, err
 	}
 	return categories, nil
+}
+
+func Get(idstr string) (Category, error) {
+	var category Category
+	id := types.StringToUint64(idstr)
+	if err := model.DB.First(&category, id).Error; err != nil {
+		return category, err
+	}
+	return category, nil
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/wangyaodream/gerty-goblog/app/models/article"
 	"github.com/wangyaodream/gerty-goblog/app/models/category"
 	"github.com/wangyaodream/gerty-goblog/app/requests"
 	"github.com/wangyaodream/gerty-goblog/pkg/flash"
@@ -46,5 +47,21 @@ func (*CategoriesController) Store(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *CategoriesController) Show(w http.ResponseWriter, r *http.Request) {
+	id := route.GetRouteVariable("id", r)
+
+	// 读取id对应的数据
+	_category, err := category.Get(id)
+
+	// 获取结果
+	articles, pagerData, err := article.GetByCategoryID(_category.GetStringID(), r, 2)
+
+	if err != nil {
+		c.ResponseForSQLError(w, err)
+	} else {
+		view.Render(w, view.D{
+			"Articles":  articles,
+			"PagerData": pagerData,
+		}, "articles.index", "articles._article_meta")
+	}
 
 }

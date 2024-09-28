@@ -73,3 +73,18 @@ func (article *Article) Delete() (rowsAffected int64, err error) {
 
 	return result.RowsAffected, nil
 }
+
+func GetByCategoryID(cid string, r *http.Request, perPage int) ([]Article, pagination.ViewData, error) {
+	// 初始化分页
+	db := model.DB.Model(Article{}).Where("category_id = ?", cid).Order("created_at desc")
+	_pager := pagination.New(r, db, route.Name2URL("categories.show", "id", cid), perPage)
+
+	// 获取视图数据
+	viewData := _pager.Paging()
+
+	// 获取文章数据
+	var articles []Article
+	_pager.Results(&articles)
+
+	return articles, viewData, nil
+}

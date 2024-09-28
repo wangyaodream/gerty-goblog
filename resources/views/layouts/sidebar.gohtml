@@ -8,7 +8,7 @@
   <div class="p-4 bg-white rounded shadow-sm mb-3">
     <h5>Catagiories</h5>
     <ol class="list-unstyled mb-0">
-      {{ range $key, $cat := .Catagiories }}
+      {{ range $key, $cat := .Categories }}
         <li><a href="{{ $cat.Link }}">{{ $cat.Name }}</a></li>
       {{ end }}
     </ol>

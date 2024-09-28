@@ -3,7 +3,6 @@ package controllers
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/wangyaodream/gerty-goblog/app/models/article"
 	"github.com/wangyaodream/gerty-goblog/app/policies"
@@ -86,7 +85,8 @@ func (*ArticlesController) Store(w http.ResponseWriter, r *http.Request) {
 	if len(errors) == 0 {
 		_article.Create()
 		if _article.ID > 0 {
-			fmt.Fprint(w, "插入成功! ID: "+strconv.FormatUint(_article.ID, 10))
+			flash.Success("创建文章成功!")
+			http.Redirect(w, r, "/", http.StatusFound)
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprint(w, "创建文章失败!")

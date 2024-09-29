@@ -4,8 +4,10 @@ import (
 	"strconv"
 
 	"github.com/wangyaodream/gerty-goblog/app/models"
+	"github.com/wangyaodream/gerty-goblog/app/models/category"
 	"github.com/wangyaodream/gerty-goblog/app/models/user"
 	"github.com/wangyaodream/gerty-goblog/pkg/route"
+	"github.com/wangyaodream/gerty-goblog/pkg/types"
 )
 
 type Article struct {
@@ -24,4 +26,9 @@ func (a Article) Link() string {
 
 func (a Article) CreatedAtDate() string {
 	return a.CreatedAt.Format("2006-01-02")
+}
+
+func (a Article) GetCategory() category.Category {
+	c, _ := category.Get(types.Uint64ToString(a.CategoryID))
+	return c
 }

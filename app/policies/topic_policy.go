@@ -7,5 +7,5 @@ import (
 
 // 定义授权策略
 func CanModifyArticle(_article article.Article) bool {
-	return auth.User().ID == _article.ID
+	return auth.User().ID == _article.User.ID
 }

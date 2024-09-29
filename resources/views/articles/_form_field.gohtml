@@ -19,4 +19,15 @@
       </div>
     {{ end }}
   </div>
+  <br>
+  <div class="form-floating">
+    <select class="form-select" id="floatingSelect" aria-label="Floating label select example" name="category_id">
+      {{ $Default := "未分类" }}
+      {{range $key, $cat := .Categories}}
+          <option {{if eq $cat.Name $Default}}selected{{end}} value="{{$cat.ID}}">{{$cat.Name}}</option>
+      {{end}}
+    </select>
+    <label for="floatingSelect">Categories</label>
+  </div>
+
 {{ end }}

@@ -11,6 +11,7 @@ import (
 	"github.com/wangyaodream/gerty-goblog/pkg/flash"
 	"github.com/wangyaodream/gerty-goblog/pkg/logger"
 	"github.com/wangyaodream/gerty-goblog/pkg/route"
+	"github.com/wangyaodream/gerty-goblog/pkg/types"
 	"github.com/wangyaodream/gerty-goblog/pkg/view"
 	"gorm.io/gorm"
 )
@@ -75,9 +76,10 @@ func (*ArticlesController) Create(w http.ResponseWriter, r *http.Request) {
 func (*ArticlesController) Store(w http.ResponseWriter, r *http.Request) {
 	currentUser := auth.User()
 	_article := article.Article{
-		Title:  r.PostFormValue("title"),
-		Body:   r.PostFormValue("body"),
-		UserID: currentUser.ID,
+		Title:      r.PostFormValue("title"),
+		Body:       r.PostFormValue("body"),
+		UserID:     currentUser.ID,
+		CategoryID: types.StringToUint64(r.PostFormValue("category_id")),
 	}
 
 	errors := requests.ValidateArticleForm(_article)

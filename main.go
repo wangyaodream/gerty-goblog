@@ -5,8 +5,13 @@ import (
 
 	"github.com/wangyaodream/gerty-goblog/app/http/middlewares"
 	"github.com/wangyaodream/gerty-goblog/bootstrap"
+	"github.com/wangyaodream/gerty-goblog/config"
 	"github.com/wangyaodream/gerty-goblog/pkg/logger"
 )
+
+func init() {
+	config.Initialize()
+}
 
 func main() {
 	bootstrap.SetupDB()

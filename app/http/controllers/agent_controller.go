@@ -15,10 +15,10 @@ import (
 type AgentController struct {
 }
 
-func (ac AgentController) Agent(w http.ResponseWriter, r *http.Request) {
-	baseUrl := "https://open.bigmodel.cn/api/paas/v4/chat/completions'"
+func (*AgentController) Agent(w http.ResponseWriter, r *http.Request) {
+	baseUrl := "https://open.bigmodel.cn/api/paas/v4/chat/completions"
 	currentUser := auth.User()
-	apikey := config.GetString("apikey")
+	apikey := config.GetString("app.apikey")
 	data := map[string]interface{}{
 		"model": "glm-4-flash",
 		"messages": []map[string]interface{}{
@@ -34,6 +34,7 @@ func (ac AgentController) Agent(w http.ResponseWriter, r *http.Request) {
 	}
 	res.Header.Set("Content-Type", "application/json")
 	res.Header.Set("Authorization", "Bearer "+apikey)
+	fmt.Println(apikey)
 
 	client := &http.Client{}
 	resp, err := client.Do(res)
@@ -47,5 +48,5 @@ func (ac AgentController) Agent(w http.ResponseWriter, r *http.Request) {
 	// 读取响应数据
 	body, _ := io.ReadAll(resp.Body)
 	fmt.Printf("Hello! %v result:\n", currentUser.Name)
-	fmt.Println(body)
+	fmt.Println(string(body))
 }

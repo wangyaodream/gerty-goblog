@@ -15,7 +15,33 @@ import (
 type AgentController struct {
 }
 
-func agent(msg string) string {
+type Response struct {
+	Choices   []Choice `json:"choices"`
+	Created   int64    `json:"created"`
+	ID        string   `json:"id"`
+	Model     string   `json:"model"`
+	RequestID string   `json:"request_id"`
+	Usage     Usage    `json:"usage"`
+}
+
+type Choice struct {
+	FinishReason string  `json:"finish_reason"`
+	Index        int     `json:"index"`
+	Message      Message `json:"message"`
+}
+
+type Message struct {
+	Content string `json:"content"`
+	Role    string `json:"role"`
+}
+
+type Usage struct {
+	CompletionTokens int `json:"completion_tokens"`
+	PromptTokens     int `json:"prompt_tokens"`
+	TotalTokens      int `json:"total_tokens"`
+}
+
+func agent(msg string) []byte {
 	baseUrl := "https://open.bigmodel.cn/api/paas/v4/chat/completions"
 	apikey := config.GetString("app.apikey")
 	data := map[string]interface{}{
@@ -46,7 +72,7 @@ func agent(msg string) string {
 
 	// 读取响应数据
 	body, _ := io.ReadAll(resp.Body)
-	return string(body)
+	return body
 }
 
 func (*AgentController) Home(w http.ResponseWriter, r *http.Request) {
@@ -56,9 +82,16 @@ func (*AgentController) Home(w http.ResponseWriter, r *http.Request) {
 }
 
 func (*AgentController) Chat(w http.ResponseWriter, r *http.Request) {
+	var response Response
 	msg := r.PostFormValue("body")
 	result := agent(msg)
-	logger.LogInfo(result)
-	// TODO 将结果输出到页面
+	err := json.Unmarshal(result, &response)
+	if err != nil {
+		logger.LogError(err)
+		return
+	}
 
+	view.RenderSimple(w, view.D{
+		"Message": response.Choices[0].Message.Content,
+	}, "agent.chat")
 }

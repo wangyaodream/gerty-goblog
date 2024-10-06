@@ -15,9 +15,8 @@ func RegisterWebRoutes(r *mux.Router) {
 	r.NotFoundHandler = http.HandlerFunc(pc.NotFound)
 
 	agent := new(controllers.AgentController)
-	r.HandleFunc("/agent", agent.Agent).Methods("GET").Name("agent")
-	// r.HandleFunc("/agent", agent.Home).Methods("GET").Name("agent.home")
-	// r.HandleFunc("/agent", agent.Chat).Methods("POST").Name("agent.chat")
+	r.HandleFunc("/agent", agent.Home).Methods("GET").Name("agent.home")
+	r.HandleFunc("/agent", agent.Chat).Methods("POST").Name("agent.chat")
 
 	// article
 	ac := new(controllers.ArticlesController)

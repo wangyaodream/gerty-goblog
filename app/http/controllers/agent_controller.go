@@ -7,7 +7,6 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/wangyaodream/gerty-goblog/pkg/auth"
 	"github.com/wangyaodream/gerty-goblog/pkg/config"
 	"github.com/wangyaodream/gerty-goblog/pkg/logger"
 	"github.com/wangyaodream/gerty-goblog/pkg/view"
@@ -16,14 +15,13 @@ import (
 type AgentController struct {
 }
 
-func (*AgentController) Agent(w http.ResponseWriter, r *http.Request) {
+func agent(msg string) string {
 	baseUrl := "https://open.bigmodel.cn/api/paas/v4/chat/completions"
-	currentUser := auth.User()
 	apikey := config.GetString("app.apikey")
 	data := map[string]interface{}{
 		"model": "glm-4-flash",
 		"messages": []map[string]interface{}{
-			{"role": "user", "content": "你好，请介绍下自己"},
+			{"role": "user", "content": msg},
 		},
 	}
 	jsonData, _ := json.Marshal(data)
@@ -48,8 +46,7 @@ func (*AgentController) Agent(w http.ResponseWriter, r *http.Request) {
 
 	// 读取响应数据
 	body, _ := io.ReadAll(resp.Body)
-	fmt.Printf("Hello! %v result:\n", currentUser.Name)
-	fmt.Println(string(body))
+	return string(body)
 }
 
 func (*AgentController) Home(w http.ResponseWriter, r *http.Request) {
@@ -59,5 +56,7 @@ func (*AgentController) Home(w http.ResponseWriter, r *http.Request) {
 }
 
 func (*AgentController) Chat(w http.ResponseWriter, r *http.Request) {
-
+	msg := r.PostFormValue("body")
+	result := agent(msg)
+	logger.LogInfo(result)
 }

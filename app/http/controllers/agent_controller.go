@@ -59,4 +59,6 @@ func (*AgentController) Chat(w http.ResponseWriter, r *http.Request) {
 	msg := r.PostFormValue("body")
 	result := agent(msg)
 	logger.LogInfo(result)
+	// TODO 将结果输出到页面
+
 }

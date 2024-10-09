@@ -95,3 +95,6 @@ func (*AgentController) Chat(w http.ResponseWriter, r *http.Request) {
 		"Message": response.Choices[0].Message.Content,
 	}, "agent.chat")
 }
+
+func (*AgentController) ChatStore(w http.ResponseWriter, r *http.Request) {
+}

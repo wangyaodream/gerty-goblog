@@ -8,11 +8,12 @@ import (
 func main() {
 	envVars := []string{
 		"DB_HOST",
-        "DB_NAME",
+		"DB_NAME",
 		"DB_USER",
 		"DB_PASSWORD",
 		"DB_PORT",
 		"DB_TYPE",
+		"BIGMODEL_APIKEY", // 智普大模型api
 	}
 	file, err := os.Create(".env")
 	if err != nil {
@@ -26,5 +27,5 @@ func main() {
 		file.WriteString(fmt.Sprintf("%s=\"\"\n", key))
 	}
 
-	fmt.Println("file created successfully")
+	fmt.Println("config file created successfully")
 }

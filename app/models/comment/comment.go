@@ -1,11 +1,14 @@
 package comment
 
-import "github.com/wangyaodream/gerty-goblog/app/models"
+import (
+	"github.com/wangyaodream/gerty-goblog/app/models"
+	"github.com/wangyaodream/gerty-goblog/app/models/user"
+)
 
 type Comment struct {
 	models.BaseModel
 
 	Content string `gorm:"type:longtext;not null;" valid:"content"`
-	UserID  uint64 `gorm:"default:0;index"`
-	PostID  uint64 `gorm:"not null;index"`
+	UserID  uint64 `gorm:"not null;index"`
+	User    user.User
 }

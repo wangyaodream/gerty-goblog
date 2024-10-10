@@ -5,6 +5,7 @@ import (
 
 	"github.com/wangyaodream/gerty-goblog/app/models/article"
 	"github.com/wangyaodream/gerty-goblog/app/models/category"
+	"github.com/wangyaodream/gerty-goblog/app/models/comment"
 	"github.com/wangyaodream/gerty-goblog/app/models/user"
 	"github.com/wangyaodream/gerty-goblog/pkg/model"
 	"gorm.io/gorm"
@@ -31,5 +32,6 @@ func migration(db *gorm.DB) {
 		&user.User{},
 		&article.Article{},
 		&category.Category{},
+		&comment.Comment{},
 	)
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/wangyaodream/gerty-goblog/pkg/auth"
 	"github.com/wangyaodream/gerty-goblog/pkg/flash"
 	"github.com/wangyaodream/gerty-goblog/pkg/logger"
+	"github.com/wangyaodream/gerty-goblog/pkg/md"
 	"github.com/wangyaodream/gerty-goblog/pkg/route"
 	"github.com/wangyaodream/gerty-goblog/pkg/types"
 	"github.com/wangyaodream/gerty-goblog/pkg/view"
@@ -44,8 +45,15 @@ func (*ArticlesController) Show(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		// 读取成功，显示文章
+		content, err := md.RenderMarkdown([]byte(article.Body))
+		if err != nil {
+			logger.LogError(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(w, "500 服务器内部错误")
+		}
 		view.Render(w, view.D{
 			"Article": article,
+			"Content": content,
 		}, "articles.show", "articles._article_meta")
 	}
 }

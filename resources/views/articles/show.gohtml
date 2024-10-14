@@ -9,7 +9,7 @@
     {{template "article-meta" .Article }}
 
     <hr>
-    {{ .Article.Body }}
+    {{ .Content }}
 
     {{/* delete button */}}
     <form action="{{ RouteName2URL "articles.delete" "id" .Article.GetStringID }}" class="mt-4" method="POST">

@@ -20,10 +20,11 @@ func RenderTemplate(w io.Writer, name string, data D, tplFiles ...string) {
 
 	// 通用模板数据
 	data["isLogined"] = auth.Check()
-	data["loginUser"] = auth.User
+	data["loginUser"] = auth.User()
 	data["flash"] = flash.All()
 	data["Users"], _ = user.All()
 	data["Categories"], _ = category.All()
+	data["test"] = "hello world"
 
 	// 合并所有模版文件
 	allFiles := getTemplateFiles(tplFiles...)

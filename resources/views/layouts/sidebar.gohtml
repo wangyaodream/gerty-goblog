@@ -27,7 +27,7 @@
   <div class="p-4 bg-white rounded shadow-sm mb-3">
     <h5>链接</h5>
     <ol class="list-unstyled">
-      <li><a href="#">About us</a></li>
+      <li><a href="{{ RouteName2URL "users.show" }}">About us</a></li>
       {{ if .isLogined }}
         <li><a href="{{ RouteName2URL "articles.create" }}">Create</a></li>
         <li class="mt-3">

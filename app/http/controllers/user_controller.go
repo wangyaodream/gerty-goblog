@@ -41,7 +41,7 @@ func (*UserController) Show(w http.ResponseWriter, r *http.Request) {
 		} else {
 			view.Render(w, view.D{
 				"Articles": articles,
-			}, "articles.index", "articles._article_meta")
+			}, "user.detail")
 		}
 	}
 

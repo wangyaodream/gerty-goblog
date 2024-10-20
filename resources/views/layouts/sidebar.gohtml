@@ -19,7 +19,7 @@
     <h5>Authors</h5>
     <ol class="list-unstyled mb-0">
       {{ range $key, $user := .Users }}
-        <li><a href="{{ $user.Link }}">{{ $user.Name }}</a></li>
+        <li><a href="{{ $user.ShowArticles }}">{{ $user.Name }}</a></li>
       {{ end }}
     </ol>
   </div>

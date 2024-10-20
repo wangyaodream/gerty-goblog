@@ -19,6 +19,6 @@ func (u User) Link() string {
 	return route.Name2URL("users.show", "id", u.GetStringID())
 }
 
-func (u User) Detail() string {
-	return route.Name2URL("users.detail", "id", u.GetStringID())
+func (u User) ShowArticles() string {
+	return route.Name2URL("users.showArticles", "id", u.GetStringID())
 }

@@ -88,3 +88,18 @@ func GetByCategoryID(cid string, r *http.Request, perPage int) ([]Article, pagin
 
 	return articles, viewData, nil
 }
+
+func GetByUserIDShow(uid string, r *http.Request, perPage int) ([]Article, pagination.ViewData, error) {
+	db := model.DB.Model(Article{}).Where("user_id = ?", uid).Preload("users").Order("created_at desc")
+	if db.Error != nil {
+		return nil, pagination.ViewData{}, db.Error
+	}
+
+	_pager := pagination.New(r, db, route.Name2URL("users.showArticles", "id", uid), perPage)
+
+	viewData := _pager.Paging()
+
+	var articles []Article
+	_pager.Results(&articles)
+	return articles, viewData, nil
+}

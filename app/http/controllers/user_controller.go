@@ -13,6 +13,7 @@ import (
 )
 
 type UserController struct {
+	BaseController
 }
 
 // Show detail
@@ -44,6 +45,23 @@ func (*UserController) Show(w http.ResponseWriter, r *http.Request) {
 				"Articles": articles,
 			}, "user.detail")
 		}
+	}
+
+}
+
+func (uc *UserController) ShowArticles(w http.ResponseWriter, r *http.Request) {
+	id := route.GetRouteVariable("id", r)
+
+	// 获取结果
+	articles, pagerData, err := article.GetByUserIDShow(id, r, 2)
+
+	if err != nil {
+		uc.ResponseForSQLError(w, err)
+	} else {
+		view.Render(w, view.D{
+			"Articles":  articles,
+			"PagerData": pagerData,
+		}, "articles.index", "articles._article_meta")
 	}
 
 }

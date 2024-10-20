@@ -40,6 +40,7 @@ func (*UserController) Show(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, "500 服务器内部错误")
 		} else {
 			view.Render(w, view.D{
+				"User":     _user,
 				"Articles": articles,
 			}, "user.detail")
 		}

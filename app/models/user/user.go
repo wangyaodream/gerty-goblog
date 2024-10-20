@@ -18,3 +18,7 @@ type User struct {
 func (u User) Link() string {
 	return route.Name2URL("users.show", "id", u.GetStringID())
 }
+
+func (u User) Detail() string {
+	return route.Name2URL("users.detail", "id", u.GetStringID())
+}
